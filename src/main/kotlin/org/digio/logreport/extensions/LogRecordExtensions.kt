@@ -1,6 +1,6 @@
 package org.digio.logreport.extensions
 
-import org.digio.logreport.LogRecord
+import org.digio.logreport.models.LogRecord
 
 fun List<LogRecord>.groupByFrequencyOfUrl() =
     this.filter { it.url.isNotBlank() }.groupingBy { it.url }.eachCount().toList()

@@ -1,4 +1,4 @@
-package org.digio.logreport
+package org.digio.logreport.models
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName

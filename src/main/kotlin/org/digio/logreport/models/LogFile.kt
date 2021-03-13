@@ -1,4 +1,4 @@
-package org.digio.logreport
+package org.digio.logreport.models
 
 import org.digio.logreport.extensions.groupByFrequencyOfIPs
 import org.digio.logreport.extensions.groupByFrequencyOfUrl
