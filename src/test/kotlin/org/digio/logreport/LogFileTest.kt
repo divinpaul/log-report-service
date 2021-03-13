@@ -108,19 +108,134 @@ internal class LogFileTest {
         }
 
         @Test
+        internal fun `three urls in the order of appearance in the log file when frequency is the same`() {
+            val logRecord1 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord2 = LogRecord("177.71.128.22", "/intra-analytics")
+            val logRecord3 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord4 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord5 = LogRecord("177.71.128.21", "/intra-analytics-2")
+            val logRecord6 = LogRecord("177.71.128.21", "/intra-analytics-3")
+
+            assertThat(
+                LogFile(listOf(logRecord1, logRecord2, logRecord3, logRecord4, logRecord5, logRecord6))
+                    .topThreeMostVisitedUrls()
+            )
+                .isEqualTo(listOf("/intra-analytics-1", "/intra-analytics", "/intra-analytics-2"))
+        }
+
+        @Test
         internal fun `three urls in descending order of frequency when there are more than 3 distinct urls in log file`() {
             val logRecord1 = LogRecord("177.71.128.21", "/intra-analytics-1")
             val logRecord2 = LogRecord("177.71.128.22", "/intra-analytics")
             val logRecord3 = LogRecord("177.71.128.21", "/intra-analytics-1")
             val logRecord4 = LogRecord("177.71.128.24", "/intra-analytics")
-            val logRecord5 = LogRecord("177.71.128.25", "/intra-analytics-2")
-            val logRecord6 = LogRecord("177.71.128.26", "/intra-analytics-2")
-            val logRecord7 = LogRecord("177.71.128.27", "/intra-analytics-3")
+            val logRecord5 = LogRecord("177.71.128.25", "/intra-analytics-1")
+            val logRecord6 = LogRecord("177.71.128.26", "/intra-analytics-3")
+            val logRecord7 = LogRecord("177.71.128.27", "/intra-analytics-2")
+            val logRecord8 = LogRecord("177.71.128.27", "/intra-analytics-2")
 
             assertThat(
-                LogFile(listOf(logRecord1, logRecord2, logRecord3, logRecord4, logRecord5, logRecord6, logRecord7))
-                    .topThreeMostVisitedUrls()
+                LogFile(
+                    listOf(
+                        logRecord1, logRecord2, logRecord3, logRecord4,
+                        logRecord5, logRecord6, logRecord7, logRecord8
+                    )
+                ).topThreeMostVisitedUrls()
             ).isEqualTo(listOf("/intra-analytics-1", "/intra-analytics", "/intra-analytics-2"))
+        }
+    }
+
+    @Nested
+    @DisplayName("top three most active IP addresses contains")
+    inner class TopThreeMostActiveIPs {
+        @Test
+        internal fun `an empty list when there are no log record entries`() {
+            assertThat(LogFile(emptyList()).topThreeMostActiveIPs()).isEqualTo(emptyList<String>())
+        }
+
+        @Test
+        internal fun `an empty list when the log record entry has a blank ip`() {
+            val logRecord = LogRecord("", "/intra-analytics")
+
+            assertThat(LogFile(listOf(logRecord)).topThreeMostActiveIPs()).isEqualTo(emptyList<String>())
+        }
+
+        @Test
+        internal fun `one ip when there is just one log record entry`() {
+            val logRecord = LogRecord("177.71.128.21", "/intra-analytics")
+
+            assertThat(LogFile(listOf(logRecord)).topThreeMostActiveIPs()).isEqualTo(listOf("177.71.128.21"))
+        }
+
+        @Test
+        internal fun `one ip when the same ip is repeated multiple times`() {
+            val logRecord1 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord2 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord3 = LogRecord("177.71.128.21", "/intra-analytics-2")
+
+            assertThat(LogFile(listOf(logRecord1, logRecord2, logRecord3)).topThreeMostActiveIPs())
+                .isEqualTo(listOf("177.71.128.21"))
+        }
+
+        @Test
+        internal fun `three ips when there are three distinct ips in log file`() {
+            val logRecord1 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord2 = LogRecord("177.71.128.22", "/intra-analytics")
+            val logRecord3 = LogRecord("177.71.128.23", "/intra-analytics-2")
+
+            assertThat(LogFile(listOf(logRecord1, logRecord2, logRecord3)).topThreeMostActiveIPs())
+                .isEqualTo(listOf("177.71.128.21", "177.71.128.22", "177.71.128.23"))
+        }
+
+        @Test
+        internal fun `three ips in descending order of frequency when ips repeat in the log file`() {
+            val logRecord1 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord2 = LogRecord("177.71.128.22", "/intra-analytics-1")
+            val logRecord3 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord4 = LogRecord("177.71.128.21", "/intra-analytics-1")
+            val logRecord5 = LogRecord("177.71.128.23", "/intra-analytics")
+            val logRecord6 = LogRecord("177.71.128.23", "/intra-analytics-2")
+
+            assertThat(
+                LogFile(listOf(logRecord1, logRecord2, logRecord3, logRecord4, logRecord5, logRecord6))
+                    .topThreeMostActiveIPs()
+            ).isEqualTo(listOf("177.71.128.21", "177.71.128.23", "177.71.128.22"))
+        }
+
+        @Test
+        internal fun `three ips in the order of appearance in the log file when frequency is the same`() {
+            val logRecord1 = LogRecord("177.71.128.22", "/intra-analytics-1")
+            val logRecord2 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord3 = LogRecord("177.71.128.22", "/intra-analytics-1")
+            val logRecord4 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord5 = LogRecord("177.71.128.23", "/intra-analytics-2")
+            val logRecord6 = LogRecord("177.71.128.24", "/intra-analytics-3")
+
+            assertThat(
+                LogFile(listOf(logRecord1, logRecord2, logRecord3, logRecord4, logRecord5, logRecord6))
+                    .topThreeMostActiveIPs()
+            )
+                .isEqualTo(listOf("177.71.128.22", "177.71.128.21", "177.71.128.23"))
+        }
+
+        @Test
+        internal fun `three ips in descending order of frequency when there are more than 3 distinct ips in log file`() {
+            val logRecord1 = LogRecord("177.71.128.22", "/intra-analytics-1")
+            val logRecord2 = LogRecord("177.71.128.21", "/intra-analytics")
+            val logRecord3 = LogRecord("177.71.128.22", "/intra-analytics-1")
+            val logRecord4 = LogRecord("177.71.128.22", "/intra-analytics")
+            val logRecord5 = LogRecord("177.71.128.21", "/intra-analytics-2")
+            val logRecord6 = LogRecord("177.71.128.23", "/intra-analytics-2")
+            val logRecord7 = LogRecord("177.71.128.24", "/intra-analytics-3")
+            val logRecord8 = LogRecord("177.71.128.24", "/intra-analytics-3")
+
+            assertThat(
+                LogFile(
+                    listOf(
+                        logRecord1, logRecord2, logRecord3, logRecord4, logRecord5, logRecord6, logRecord7, logRecord8
+                    )
+                ).topThreeMostActiveIPs()
+            ).isEqualTo(listOf("177.71.128.22", "177.71.128.21", "177.71.128.24"))
         }
     }
 }
