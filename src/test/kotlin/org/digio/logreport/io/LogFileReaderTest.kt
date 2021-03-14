@@ -41,6 +41,16 @@ internal class LogFileReaderTest {
     }
 
     @Test
+    internal fun `ignores log record entries with a malformed ip address`() {
+        val inputFile = File(LogFileReaderTest::class.java.getResource("/inputFileWithMalformedIPAddress.log").file)
+        assertThat(logFileReader.read(inputFile)).isEqualTo(
+            listOf(
+                Pair("168.41.191.40", "http://example.net/faq/")
+            )
+        )
+    }
+
+    @Test
     internal fun `ignores log record entries without a url`() {
         val inputFile = File(LogFileReaderTest::class.java.getResource("/inputFileWithoutURL.log").file)
         assertThat(logFileReader.read(inputFile)).isEqualTo(
