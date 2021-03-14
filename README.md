@@ -28,3 +28,9 @@ transforming LogFile into a **Rich Domain Model**.
     * LogFileReader: Reads from a log file in a fixed format as of now. Added InputFileReader abstraction to make it extensible
      for a new log format.
     * Output writer: Writes to console as of now. Added OutputWriter abstraction to make it extensible.
+## Other considerations
+* Performance
+    * As Log files can be large, used Sequence instead of Iterable to process the records read from the log file. This will
+    improve the performance of the chain for large collections by not building intermediate step results.
+    * Used `File.useLines()` which reads a file line by line rather than loading the entire file into memory in one go which
+    could take up a lot of memory for large files.
