@@ -10,13 +10,13 @@ class LogFileReader : InputFileReader {
         val ipRegexPattern = IP_REGEX.toRegex()
         val urlRegexPattern = URL_REGEX.toRegex()
 
-        return inputFile
-            .useLines { line -> removeBlankLines(line).toList() }.map { line ->
+        return inputFile.useLines {
+            removeBlankLines(it).map { line ->
                 val ipAddress = ipRegexPattern.find(line)?.value ?: ""
                 val url = urlRegexPattern.find(line)?.value ?: ""
                 ipAddress to url
-            }
-            .filterNot { it.first.isBlank() || it.second.isBlank() }
+            }.filterNot { ipToUrl -> ipToUrl.first.isBlank() || ipToUrl.second.isBlank() }.toList()
+        }
     }
 
     private fun removeBlankLines(lines: Sequence<String>) = lines.filter { it.isNotEmpty() }
